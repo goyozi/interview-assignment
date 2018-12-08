@@ -1,5 +1,6 @@
 package com.interview.assignment.api
 
+import com.interview.assignment.model.Product
 import com.interview.assignment.persistence.ProductRepository
 import groovyx.net.http.HttpResponseException
 import groovyx.net.http.RESTClient
@@ -24,6 +25,7 @@ class ProductControllerSpec extends Specification {
     void setup() {
         endpoint = new RESTClient("http://localhost:$port/products", VERSIONED_CONTENT)
         endpoint.encoder[VERSIONED_CONTENT] = endpoint.encoder['application/json']
+        endpoint.parser[VERSIONED_CONTENT] = endpoint.parser['application/json']
     }
 
     void cleanup() {
@@ -66,5 +68,35 @@ class ProductControllerSpec extends Specification {
         ''        | 1.23
         ' '       | 1.23
         'correct' | -1
+    }
+
+    def "product listing - no products"() {
+        when:
+        def response = endpoint.get([:])
+
+        then:
+        response.status == 200
+
+        and:
+        response.data.size() == 0
+    }
+
+    def "product listing - with products"() {
+        given:
+        def product1 = new Product("doesn't matter", 1.23)
+        def product2 = new Product("still doesn't", 2.34)
+        products.save(product1)
+        products.save(product2)
+
+        when:
+        def response = endpoint.get([:])
+
+        then:
+        response.status == 200
+
+        and:
+        response.data.size() == 2
+        response.data.any { it.id != null && it.name == "doesn't matter" && it.price == 1.23 }
+        response.data.any { it.id != null && it.name == "still doesn't" && it.price == 2.34 }
     }
 }
