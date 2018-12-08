@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/products", consumes = "application/vnd.assignment.product.v1+json")
@@ -15,7 +17,7 @@ public class ProductController {
     private final ProductRepository products;
 
     @PostMapping
-    public void createProduct(@RequestBody ProductInput input) {
+    public void create(@Valid @RequestBody ProductInput input) {
         var product = new Product(input.getName(), input.getPrice());
         products.save(product);
     }
