@@ -23,7 +23,7 @@ class ProductControllerSpec extends Specification {
     def endpoint
 
     void setup() {
-        endpoint = new RESTClient("http://localhost:$port/products", VERSIONED_CONTENT)
+        endpoint = new RESTClient("http://localhost:$port/products/", VERSIONED_CONTENT)
         endpoint.encoder[VERSIONED_CONTENT] = endpoint.encoder['application/json']
         endpoint.parser[VERSIONED_CONTENT] = endpoint.parser['application/json']
     }
@@ -98,5 +98,54 @@ class ProductControllerSpec extends Specification {
         response.data.size() == 2
         response.data.any { it.id != null && it.name == "doesn't matter" && it.price == 1.23 }
         response.data.any { it.id != null && it.name == "still doesn't" && it.price == 2.34 }
+    }
+
+    def "successful product update"() {
+        given:
+        def product = products.save(new Product('old-name', 1.23))
+
+        when:
+        def response = endpoint.put(path: "$product.id", body: [name: 'new-name', price: 2.34])
+
+        then:
+        response.status == 200
+
+        and:
+        def updated = products.findById(product.id).get()
+        updated.name == 'new-name'
+        updated.price == 2.34
+    }
+
+    def "unsuccessful product update - no product"() {
+        when:
+        endpoint.put(path: '123', body: [name: 'not-used', price: 1.23])
+
+        then:
+        def e = thrown(HttpResponseException)
+        e.response.status == 404
+    }
+
+    def "unsuccessful product update - invalid parameters"() {
+        given:
+        def product = products.save(new Product('old-name', 1.23))
+
+        when:
+        endpoint.put(path: "$product.id", body: [name: name, price: price])
+
+        then:
+        def e = thrown HttpResponseException
+        e.response.status == 400
+
+        and:
+        def updated = products.findById(product.id).get()
+        updated.name == 'old-name'
+        updated.price == 1.23
+
+        where:
+        name       | price
+        null       | 2.34
+        ''         | 2.34
+        ' '        | 2.34
+        'new-name' | -1
     }
 }
