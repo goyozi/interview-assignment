@@ -6,12 +6,17 @@ import com.interview.assignment.persistence.OrderRepository;
 import com.interview.assignment.persistence.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
+import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Slf4j
@@ -46,6 +51,15 @@ public class OrderController {
     @ExceptionHandler(MissingProductException.class)
     public void handleMissingProduct(MissingProductException exception) {
         log.warn("Order for non-existing product {}", exception.productId);
+    }
+
+    @GetMapping(produces = VERSIONED_CONTENT)
+    public Set<OrderOutput> find(@RequestParam @DateTimeFormat(iso = DATE_TIME) LocalDateTime from,
+                                 @RequestParam @DateTimeFormat(iso = DATE_TIME) LocalDateTime to) {
+        return orders.findByPlacedAtBetween(from, to)
+                .stream()
+                .map(OrderOutput::new)
+                .collect(toSet());
     }
 
     @RequiredArgsConstructor
