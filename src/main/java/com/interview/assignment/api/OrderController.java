@@ -43,14 +43,8 @@ public class OrderController {
 
     private OrderItem toOrderItem(OrderInputItem item) {
         var product = products.findById(item.getProductId())
-                .orElseThrow(() -> new MissingProductException(item.getProductId()));
+                .orElseThrow(MissingProductException::new);
         return new OrderItem(product, item.getQuantity());
-    }
-
-    @ResponseStatus(BAD_REQUEST)
-    @ExceptionHandler(MissingProductException.class)
-    public void handleMissingProduct(MissingProductException exception) {
-        log.warn("Order for non-existing product {}", exception.productId);
     }
 
     @GetMapping(produces = VERSIONED_CONTENT)
@@ -63,7 +57,7 @@ public class OrderController {
     }
 
     @RequiredArgsConstructor
+    @ResponseStatus(code = BAD_REQUEST, reason = "Missing product with provided ID")
     private static class MissingProductException extends RuntimeException {
-        private final Long productId;
     }
 }
