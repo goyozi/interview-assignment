@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:mariadb://${MARIADB_URL}:3306/assignment
+    username: ${MARIADB_USER}
+    password: ${MARIADB_PASSWORD}
+  jpa:
+    hibernate:
+      # TODO: replace with Flyway/Liquibase
+      ddl-auto: update

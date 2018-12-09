@@ -4,7 +4,6 @@
     "version": "1.0",
     "title": "Interview Assignment"
   },
-  "host": "localhost:8080",
   "basePath": "/",
   "tags": [
     {
