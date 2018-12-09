@@ -3,29 +3,15 @@ package com.interview.assignment.api
 import com.interview.assignment.model.Product
 import com.interview.assignment.persistence.ProductRepository
 import groovyx.net.http.HttpResponseException
-import groovyx.net.http.RESTClient
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.web.server.LocalServerPort
-import spock.lang.Specification
 
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
-
-@SpringBootTest(webEnvironment = RANDOM_PORT)
-class ProductControllerSpec extends Specification {
-    static final VERSIONED_CONTENT = 'application/vnd.assignment.product.v1+json'
+class ProductControllerSpec extends ControllerSpec {
 
     @Autowired
     ProductRepository products
 
-    @LocalServerPort
-    def port
-    def endpoint
-
     void setup() {
-        endpoint = new RESTClient("http://localhost:$port/products/", VERSIONED_CONTENT)
-        endpoint.encoder[VERSIONED_CONTENT] = endpoint.encoder['application/json']
-        endpoint.parser[VERSIONED_CONTENT] = endpoint.parser['application/json']
+        initEndpoint('product')
     }
 
     void cleanup() {
