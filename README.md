@@ -1,5 +1,7 @@
 # Interview Assignment
 
+The project requires a JDK 11 to be available in PATH and (optionally) a Docker installation.
+
 ## Building the project
 
 ```
