@@ -1,0 +1,333 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0",
+    "title": "Interview Assignment"
+  },
+  "host": "localhost:8080",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "orders",
+      "description": "Place and retrieve orders"
+    },
+    {
+      "name": "products",
+      "description": "Create, edit, and retrieve products"
+    }
+  ],
+  "paths": {
+    "/orders": {
+      "get": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Find orders in provided time range",
+        "produces": [
+          "application/vnd.assignment.order.v1+json"
+        ],
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "description": "Time range start",
+            "required": true,
+            "type": "string",
+            "format": "date-time",
+            "allowEmptyValue": false,
+            "x-example": "2018-01-01T00:00:00"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "Time range end",
+            "required": true,
+            "type": "string",
+            "format": "date-time",
+            "allowEmptyValue": false,
+            "x-example": "2019-12-31T23:59:59"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/OrderOutput"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters"
+          },
+          "404": {
+            "description": "Resource not found"
+          },
+          "500": {
+            "description": "Internal error"
+          }
+        },
+        "deprecated": false
+      },
+      "post": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Place an order",
+        "consumes": [
+          "application/vnd.assignment.order.v1+json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "order",
+            "description": "Buyer's email and product quantities",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/OrderInput"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Invalid request parameters"
+          },
+          "404": {
+            "description": "Resource not found"
+          },
+          "500": {
+            "description": "Internal error"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/products": {
+      "get": {
+        "tags": [
+          "products"
+        ],
+        "summary": "Retrieve all products",
+        "produces": [
+          "application/vnd.assignment.product.v1+json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ProductOutput"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters"
+          },
+          "404": {
+            "description": "Resource not found"
+          },
+          "500": {
+            "description": "Internal error"
+          }
+        },
+        "deprecated": false
+      },
+      "post": {
+        "tags": [
+          "products"
+        ],
+        "summary": "Create a product",
+        "consumes": [
+          "application/vnd.assignment.product.v1+json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "product",
+            "description": "Product's name and price",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ProductInput"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Invalid request parameters"
+          },
+          "404": {
+            "description": "Resource not found"
+          },
+          "500": {
+            "description": "Internal error"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/products/{productId}": {
+      "put": {
+        "tags": [
+          "products"
+        ],
+        "summary": "Update a product",
+        "consumes": [
+          "application/vnd.assignment.product.v1+json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "product",
+            "description": "Product's new name and price",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ProductInput"
+            }
+          },
+          {
+            "name": "productId",
+            "in": "path",
+            "description": "Product's ID",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Invalid request parameters"
+          },
+          "404": {
+            "description": "Resource not found"
+          },
+          "500": {
+            "description": "Internal error"
+          }
+        },
+        "deprecated": false
+      }
+    }
+  },
+  "definitions": {
+    "OrderInput": {
+      "type": "object",
+      "properties": {
+        "buyer": {
+          "type": "string"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OrderInputItem"
+          }
+        }
+      },
+      "title": "OrderInput"
+    },
+    "OrderInputItem": {
+      "type": "object",
+      "properties": {
+        "productId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "quantity": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "OrderInputItem"
+    },
+    "OrderOutput": {
+      "type": "object",
+      "properties": {
+        "buyer": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OrderOutputItem"
+          }
+        },
+        "placedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "totalAmount": {
+          "type": "number"
+        }
+      },
+      "title": "OrderOutput"
+    },
+    "OrderOutputItem": {
+      "type": "object",
+      "properties": {
+        "price": {
+          "type": "number"
+        },
+        "productId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "quantity": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "OrderOutputItem"
+    },
+    "ProductInput": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "price": {
+          "type": "number"
+        }
+      },
+      "title": "ProductInput"
+    },
+    "ProductOutput": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "price": {
+          "type": "number"
+        }
+      },
+      "title": "ProductOutput"
+    }
+  }
+}
